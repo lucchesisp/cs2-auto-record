@@ -26,6 +26,7 @@ g_gsi_port = 3456
 g_stop_delay = 20
 g_auto_upload = False
 g_upload_privacy = "private"
+g_upload_limit = 0
 
 g_player_id = None
 g_recording_start_ts = 0.0
@@ -253,6 +254,8 @@ def start_upload(files, stem):
     title = title_from_stem(stem)
     cmd = ["py", "-3", uploader, video,
            "--title", title, "--privacy", g_upload_privacy]
+    if g_upload_limit > 0:
+        cmd += ["--limit", str(g_upload_limit)]
     try:
         subprocess.Popen(cmd, creationflags=CREATE_NO_WINDOW, cwd=g_script_dir)
         log(f"upload started: {os.path.basename(video)} ({g_upload_privacy})")
@@ -493,6 +496,9 @@ def script_properties():
                                         obs.OBS_COMBO_FORMAT_STRING)
     for v in ("private", "unlisted", "public"):
         obs.obs_property_list_add_string(plist, v, v)
+    obs.obs_properties_add_int(props, "upload_limit",
+                               "Upload speed limit (MB/s, 0 = unlimited)",
+                               0, 100, 1)
     return props
 
 
@@ -506,6 +512,7 @@ def script_defaults(settings):
     obs.obs_data_set_default_int(settings, "stop_delay", 20)
     obs.obs_data_set_default_bool(settings, "auto_upload", False)
     obs.obs_data_set_default_string(settings, "upload_privacy", "private")
+    obs.obs_data_set_default_int(settings, "upload_limit", 0)
 
 
 def script_update(settings):
@@ -530,6 +537,8 @@ def script_update(settings):
     g_stop_delay = obs.obs_data_get_int(settings, "stop_delay")
     g_auto_upload = obs.obs_data_get_bool(settings, "auto_upload")
     g_upload_privacy = obs.obs_data_get_string(settings, "upload_privacy") or "private"
+    global g_upload_limit
+    g_upload_limit = obs.obs_data_get_int(settings, "upload_limit")
 
     new_enabled = obs.obs_data_get_bool(settings, "gsi_enabled")
     new_port = obs.obs_data_get_int(settings, "gsi_port")

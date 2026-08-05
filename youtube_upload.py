@@ -46,7 +46,7 @@ def get_credentials():
     return creds
 
 
-def upload(file_path, title, privacy, description):
+def upload(file_path, title, privacy, description, limit_mbs=0.0):
     youtube = build("youtube", "v3", credentials=get_credentials())
     body = {
         "snippet": {
@@ -59,7 +59,8 @@ def upload(file_path, title, privacy, description):
             "selfDeclaredMadeForKids": False,
         },
     }
-    media = MediaFileUpload(file_path, chunksize=8 * 1024 * 1024, resumable=True)
+    chunk_size = 8 * 1024 * 1024
+    media = MediaFileUpload(file_path, chunksize=chunk_size, resumable=True)
     request = youtube.videos().insert(part="snippet,status", body=body,
                                       media_body=media)
     log(f"uploading: {file_path} as \"{title}\" ({privacy})")
@@ -67,6 +68,7 @@ def upload(file_path, title, privacy, description):
     errors = 0
     last_pct = -1
     while response is None:
+        chunk_start = time.monotonic()
         try:
             status, response = request.next_chunk()
             errors = 0
@@ -75,6 +77,11 @@ def upload(file_path, title, privacy, description):
                 if pct >= last_pct + 10:
                     last_pct = pct
                     log(f"progress: {pct}%")
+            if limit_mbs > 0 and response is None:
+                expected = (chunk_size / (1024 * 1024)) / limit_mbs
+                elapsed = time.monotonic() - chunk_start
+                if elapsed < expected:
+                    time.sleep(expected - elapsed)
         except HttpError as e:
             if e.resp.status in (500, 502, 503, 504):
                 errors += 1
@@ -96,6 +103,8 @@ def main():
     parser.add_argument("--privacy", default="private",
                         choices=["private", "unlisted", "public"])
     parser.add_argument("--description", default="")
+    parser.add_argument("--limit", type=float, default=0.0,
+                        help="upload speed limit in MB/s (0 = unlimited)")
     parser.add_argument("--auth-only", action="store_true")
     args = parser.parse_args()
 
@@ -109,7 +118,7 @@ def main():
 
     title = args.title or os.path.splitext(os.path.basename(args.file))[0]
     try:
-        upload(args.file, title, args.privacy, args.description)
+        upload(args.file, title, args.privacy, args.description, args.limit)
     except Exception as e:
         log(f"upload failed: {e}")
         sys.exit(1)
