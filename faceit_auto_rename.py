@@ -231,6 +231,14 @@ def rename_recording(path, new_stem):
     return renamed
 
 
+def title_from_stem(stem):
+    title = stem.replace("｜", " | ")
+    for original, substitute in FORBIDDEN_CHARS.items():
+        if original != "|":
+            title = title.replace(substitute, original)
+    return title
+
+
 def start_upload(files, stem):
     video = None
     for f in files:
@@ -242,7 +250,7 @@ def start_upload(files, stem):
     if not os.path.exists(uploader):
         log(f"uploader not found: {uploader}")
         return
-    title = stem.replace("｜", " | ")
+    title = title_from_stem(stem)
     cmd = ["py", "-3", uploader, video,
            "--title", title, "--privacy", g_upload_privacy]
     try:
