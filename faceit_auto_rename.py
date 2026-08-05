@@ -24,6 +24,7 @@ g_poll_secs = 30
 g_gsi_enabled = True
 g_gsi_port = 3456
 g_stop_delay = 20
+g_disconnect_delay = 45
 g_auto_upload = False
 g_upload_privacy = "private"
 g_upload_limit = 0
@@ -405,7 +406,7 @@ def gsi_tick():
             obs.obs_frontend_recording_stop()
             log("GSI: match over, recording stopped")
     if (g_started_by_gsi and g_last_map_ts
-            and time.time() - g_last_map_ts > 45
+            and time.time() - g_last_map_ts > g_disconnect_delay
             and obs.obs_frontend_recording_active()):
         obs.obs_frontend_recording_stop()
         log("GSI: left the server, recording stopped")
@@ -488,6 +489,8 @@ def script_properties():
     obs.obs_properties_add_int(props, "gsi_port", "GSI port", 1024, 65535, 1)
     obs.obs_properties_add_int(props, "stop_delay",
                                "Stop delay after game over (s)", 0, 120, 5)
+    obs.obs_properties_add_int(props, "disconnect_delay",
+                               "Stop delay after leaving server (s)", 15, 300, 5)
     obs.obs_properties_add_bool(props, "auto_upload",
                                 "Upload to YouTube after rename")
     plist = obs.obs_properties_add_list(props, "upload_privacy",
@@ -510,6 +513,7 @@ def script_defaults(settings):
     obs.obs_data_set_default_bool(settings, "gsi_enabled", True)
     obs.obs_data_set_default_int(settings, "gsi_port", 3456)
     obs.obs_data_set_default_int(settings, "stop_delay", 20)
+    obs.obs_data_set_default_int(settings, "disconnect_delay", 45)
     obs.obs_data_set_default_bool(settings, "auto_upload", False)
     obs.obs_data_set_default_string(settings, "upload_privacy", "private")
     obs.obs_data_set_default_int(settings, "upload_limit", 0)
@@ -535,6 +539,8 @@ def script_update(settings):
     g_max_wait_min = obs.obs_data_get_int(settings, "max_wait_min")
     g_poll_secs = obs.obs_data_get_int(settings, "poll_secs")
     g_stop_delay = obs.obs_data_get_int(settings, "stop_delay")
+    global g_disconnect_delay
+    g_disconnect_delay = obs.obs_data_get_int(settings, "disconnect_delay")
     g_auto_upload = obs.obs_data_get_bool(settings, "auto_upload")
     g_upload_privacy = obs.obs_data_get_string(settings, "upload_privacy") or "private"
     global g_upload_limit

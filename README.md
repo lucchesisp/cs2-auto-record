@@ -95,7 +95,8 @@ Good to know:
 | Retry interval (s) | Time between FACEIT API polls |
 | Auto start/stop recording with CS2 (GSI) | Toggle the automation |
 | GSI port | Local port for the GSI listener (must match the cfg) |
-| Stop delay after game over (s) | Extra seconds recorded after the match ends |
+| Stop delay after game over (s) | Extra seconds recorded after the match ends (only useful to capture the scoreboard on video — stats don't need it) |
+| Stop delay after leaving server (s) | How long to wait without game data before assuming you left the server |
 | Upload to YouTube after rename | Toggle uploads |
 | YouTube privacy | private / unlisted / public |
 | Upload speed limit (MB/s) | Caps upload bandwidth so a running upload doesn't cause ping spikes in your next match (0 = unlimited) |
@@ -110,7 +111,7 @@ The score is always from your team's perspective. `{rating}` is an HLTV 1.0-styl
 - Nothing triggers in game: make sure CS2 was restarted after copying the cfg, and that the GSI port matches.
 - `FACEIT nickname not found`: the nickname must match your FACEIT profile exactly (check the URL: `faceit.com/en/players/<nickname>`).
 - A practice/scrim server in competitive mode also triggers recording; it gets labeled `MM` (or `GC` if it has a knife round) since GSI can't tell servers apart.
-- Recording never stops after you leave mid-match: it stops on its own ~45 s after the game stops sending data.
+- Recording never stops after you leave mid-match: it stops on its own after the game stops sending data (configurable, 45 s by default).
 
 ## License
 
