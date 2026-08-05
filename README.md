@@ -98,6 +98,7 @@ Good to know:
 | Stop delay after game over (s) | Extra seconds recorded after the match ends |
 | Upload to YouTube after rename | Toggle uploads |
 | YouTube privacy | private / unlisted / public |
+| Upload speed limit (MB/s) | Caps upload bandwidth so a running upload doesn't cause ping spikes in your next match (0 = unlimited) |
 
 Template placeholders: `{nickname}` `{score}` `{kda}` `{kd}` `{kills}` `{deaths}` `{assists}` `{rating}` `{map}` `{platform}` `{date}`.
 
