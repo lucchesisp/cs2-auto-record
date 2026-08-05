@@ -95,7 +95,7 @@ Good to know:
 | Retry interval (s) | Time between FACEIT API polls |
 | Auto start/stop recording with CS2 (GSI) | Toggle the automation |
 | GSI port | Local port for the GSI listener (must match the cfg) |
-| Stop delay after leaving server (s) | How long to wait without game data before assuming you left the server |
+| Stop delay after leaving server (s) | How long to wait without game data before assuming you left the server. This is also your reconnect window: if you disconnect (or the game crashes) and get back into the match within this time, the recording keeps running uninterrupted in the same file — it only stops once you've been out longer than the delay |
 | Upload to YouTube after rename | Toggle uploads |
 | YouTube privacy | private / unlisted / public |
 | Upload speed limit (MB/s) | Caps upload bandwidth so a running upload doesn't cause ping spikes in your next match (0 = unlimited) |
@@ -110,7 +110,7 @@ The score is always from your team's perspective. `{rating}` is an HLTV 1.0-styl
 - Nothing triggers in game: make sure CS2 was restarted after copying the cfg, and that the GSI port matches.
 - `FACEIT nickname not found`: the nickname must match your FACEIT profile exactly (check the URL: `faceit.com/en/players/<nickname>`).
 - A practice/scrim server in competitive mode also triggers recording; it gets labeled `MM` (or `GC` if it has a knife round) since GSI can't tell servers apart.
-- Recording never stops after you leave mid-match: it stops on its own after the game stops sending data (configurable, 45 s by default).
+- Recording never stops after you leave mid-match: it stops on its own after the game stops sending data (configurable, 45 s by default). Disconnecting and reconnecting within that window does not stop the recording.
 
 ## License
 
