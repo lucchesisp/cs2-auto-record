@@ -23,7 +23,6 @@ g_max_wait_min = 12
 g_poll_secs = 30
 g_gsi_enabled = True
 g_gsi_port = 3456
-g_stop_delay = 20
 g_disconnect_delay = 45
 g_auto_upload = False
 g_upload_privacy = "private"
@@ -359,7 +358,7 @@ class GsiHandler(http.server.BaseHTTPRequestHandler):
                     g_want_stop_at = 0.0
                     log(f"GSI: match live (mode={mode}, map={map_info.get('name')})")
             elif phase == "gameover":
-                g_want_stop_at = time.time() + g_stop_delay
+                g_want_stop_at = time.time()
             g_last_phase = phase
 
         if not phase:
@@ -487,8 +486,6 @@ def script_properties():
     obs.obs_properties_add_bool(props, "gsi_enabled",
                                 "Auto start/stop recording with CS2 (GSI)")
     obs.obs_properties_add_int(props, "gsi_port", "GSI port", 1024, 65535, 1)
-    obs.obs_properties_add_int(props, "stop_delay",
-                               "Stop delay after game over (s)", 0, 120, 5)
     obs.obs_properties_add_int(props, "disconnect_delay",
                                "Stop delay after leaving server (s)", 15, 300, 5)
     obs.obs_properties_add_bool(props, "auto_upload",
@@ -512,7 +509,6 @@ def script_defaults(settings):
     obs.obs_data_set_default_int(settings, "poll_secs", 30)
     obs.obs_data_set_default_bool(settings, "gsi_enabled", True)
     obs.obs_data_set_default_int(settings, "gsi_port", 3456)
-    obs.obs_data_set_default_int(settings, "stop_delay", 20)
     obs.obs_data_set_default_int(settings, "disconnect_delay", 45)
     obs.obs_data_set_default_bool(settings, "auto_upload", False)
     obs.obs_data_set_default_string(settings, "upload_privacy", "private")
@@ -522,7 +518,7 @@ def script_defaults(settings):
 def script_update(settings):
     global g_api_key, g_nickname, g_template_faceit, g_template_other
     global g_max_wait_min, g_poll_secs, g_player_id
-    global g_gsi_enabled, g_gsi_port, g_stop_delay
+    global g_gsi_enabled, g_gsi_port
     global g_auto_upload, g_upload_privacy
 
     global g_display_name
@@ -538,7 +534,6 @@ def script_update(settings):
                         or g_template_other)
     g_max_wait_min = obs.obs_data_get_int(settings, "max_wait_min")
     g_poll_secs = obs.obs_data_get_int(settings, "poll_secs")
-    g_stop_delay = obs.obs_data_get_int(settings, "stop_delay")
     global g_disconnect_delay
     g_disconnect_delay = obs.obs_data_get_int(settings, "disconnect_delay")
     g_auto_upload = obs.obs_data_get_bool(settings, "auto_upload")

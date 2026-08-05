@@ -95,7 +95,6 @@ Good to know:
 | Retry interval (s) | Time between FACEIT API polls |
 | Auto start/stop recording with CS2 (GSI) | Toggle the automation |
 | GSI port | Local port for the GSI listener (must match the cfg) |
-| Stop delay after game over (s) | Extra seconds recorded after the match ends (only useful to capture the scoreboard on video — stats don't need it) |
 | Stop delay after leaving server (s) | How long to wait without game data before assuming you left the server |
 | Upload to YouTube after rename | Toggle uploads |
 | YouTube privacy | private / unlisted / public |
